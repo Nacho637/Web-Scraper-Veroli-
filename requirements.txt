@@ -1,0 +1,13 @@
+# ---------------------------------------------------------------------------
+# Python-Pakete, die der Scraper braucht.
+# Werden automatisch installiert mit:  pip install -r requirements.txt
+# (Auf GitHub Actions passiert das ganz von allein.)
+# ---------------------------------------------------------------------------
+
+requests==2.32.3          # HTTP-Anfragen (Webseiten herunterladen)
+trafilatura==1.12.2       # Volltext sauber aus HTML extrahieren (Werbung/Navi raus)
+py3langid==0.3.0          # Automatische Sprach-Erkennung (ohne Build-Schritt)
+PyYAML==6.0.2             # Liest die Config-Datei (config/search_config.yaml)
+python-dotenv==1.0.1      # Liest API-Keys aus der .env-Datei (nur lokal)
+supabase==2.9.1           # Speichert Treffer in der Supabase-Datenbank
+tenacity==9.0.0           # Automatische Wiederholung bei Netzwerkfehlern

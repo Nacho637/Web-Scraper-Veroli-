@@ -1,0 +1,73 @@
+# ===========================================================================
+#  GitHub Actions Workflow: startet den Scraper per Knopfdruck.
+#
+#  So startest du einen Lauf (ohne irgendetwas zu installieren):
+#  1. Oeffne dein Repo auf github.com
+#  2. Klicke oben auf den Reiter "Actions"
+#  3. Links auf "Suchlauf starten (Scraper)"
+#  4. Rechts auf den grauen Button "Run workflow"
+#  5. (optional) Such-Anbieter waehlen -> gruener Button "Run workflow"
+#
+#  Die Ergebnisse landen in Supabase UND als herunterladbare Datei
+#  (CSV/JSON) unter dem Lauf bei "Artifacts".
+# ===========================================================================
+
+name: Suchlauf starten (Scraper)
+
+# Nur manueller Start (kein Zeitplan, kein automatisches Monitoring).
+on:
+  workflow_dispatch:
+    inputs:
+      search_provider:
+        description: "Such-Anbieter"
+        required: true
+        default: "brave"
+        type: choice
+        options:
+          - brave
+          - serpapi
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # 1. Code aus dem Repo holen
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      # 2. Python bereitstellen
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      # 3. Pakete installieren
+      - name: Pakete installieren
+        run: pip install -r requirements.txt
+
+      # 4. Scraper starten
+      #    Die Secrets kommen aus: Settings -> Secrets and variables -> Actions
+      - name: Suchlauf ausfuehren
+        env:
+          SEARCH_PROVIDER: ${{ inputs.search_provider }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python -m src.main --config config/search_config.yaml
+
+      # 5. Ergebnis-Dateien zum Download anbieten (CSV/JSON)
+      #    Bleiben 90 Tage als "Artifact" beim Lauf verfuegbar.
+      - name: Ergebnisse als Download bereitstellen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-ergebnisse
+          path: |
+            exports/*.csv
+            exports/*.json
+          retention-days: 90
+          if-no-files-found: warn

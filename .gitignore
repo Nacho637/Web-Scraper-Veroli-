@@ -1,0 +1,24 @@
+# --- Geheimnisse / API-Keys: NIEMALS ins Repo committen! ---
+.env
+*.env
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.Python
+
+# --- Ergebnis-Dateien (lokale Exporte) ---
+# Die exportierten CSV/JSON-Dateien gehoeren NICHT ins Repo.
+exports/*.csv
+exports/*.json
+!exports/.gitkeep
+
+# --- Editor / Betriebssystem ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

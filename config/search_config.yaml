@@ -1,0 +1,70 @@
+# ===========================================================================
+#  DEINE SUCH-KONFIGURATION  -  Das ist die EINZIGE Datei, die du
+#  normalerweise bearbeiten musst.
+#
+#  Du kannst sie direkt im GitHub-Browser bearbeiten:
+#  Repo oeffnen -> Ordner "config" -> "search_config.yaml" anklicken
+#  -> auf das Stift-Symbol (Edit) klicken -> aendern -> "Commit changes".
+#
+#  Regeln (ganz wichtig):
+#  - Einrueckung mit LEERZEICHEN (keine Tabs).
+#  - Jeder Listeneintrag beginnt mit "  - " (zwei Leerzeichen, Bindestrich, Leerzeichen).
+#  - Text mit Sonderzeichen am besten in "Anfuehrungszeichen" setzen.
+# ===========================================================================
+
+# Ein freier Name fuer diesen Suchlauf (taucht spaeter in den Daten auf).
+run_name: "beispiel-lauf-2026"
+
+# ---------------------------------------------------------------------------
+# 1) WONACH soll gesucht werden?
+# ---------------------------------------------------------------------------
+
+# Einzelne Schlagwoerter / Themen. Pro Eintrag wird eine Suche gestartet.
+keywords:
+  - "Klimawandel"
+  - "Energiewende"
+
+# Exakte Phrasen / ganze Saetze. Werden als exakte Wortfolge gesucht.
+phrases:
+  - "soziale Gerechtigkeit"
+  - "demografischer Wandel"
+
+# Themenfelder mit Synonymen. Alle Begriffe einer Gruppe werden gesucht,
+# der Treffer wird aber dem Themen-Namen ("topic") zugeordnet.
+topics:
+  - name: "migration"
+    terms:
+      - "Migration"
+      - "Zuwanderung"
+      - "Geflüchtete"
+
+# ---------------------------------------------------------------------------
+# 2) Optionale feste Start-URLs (werden IMMER zusaetzlich abgerufen,
+#    egal was die Such-API liefert). Leer lassen, wenn nicht gebraucht.
+# ---------------------------------------------------------------------------
+start_urls:
+  # - "https://www.beispiel-nachrichtenseite.de/artikel-123"
+
+# ---------------------------------------------------------------------------
+# 3) Such-Einstellungen
+# ---------------------------------------------------------------------------
+settings:
+  # Maximale Anzahl Treffer-URLs PRO Suchbegriff (Such-API).
+  max_results_per_query: 10
+
+  # Sprache/Land der Suche (Brave: z. B. "de", "en", "fr").
+  search_language: "de"
+
+  # Wartezeit zwischen zwei Webseiten-Abrufen in Sekunden (Hoeflichkeit /
+  # Rate-Limiting). Nicht unter 1.0 setzen.
+  request_delay_seconds: 2.0
+
+  # robots.txt der Webseiten respektieren? (Sollte "true" bleiben.)
+  respect_robots_txt: true
+
+  # Nur Haupttext mit mindestens so vielen Zeichen behalten
+  # (filtert leere/zu kurze Seiten heraus).
+  min_text_length: 200
+
+  # Einfache Haeufigkeitsauswertung pro Keyword am Ende erstellen?
+  frequency_analysis: true
