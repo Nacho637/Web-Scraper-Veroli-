@@ -21,36 +21,37 @@ run_name: "beispiel-lauf-2026"
 
 # Einzelne Schlagwoerter / Themen. Pro Eintrag wird eine Suche gestartet.
 keywords:
-  - "Klimawandel"
-  - "Energiewende"
+  - "Brandmauer"
+  - "AFD"
+  - "Undemokratisch"
 
 # Exakte Phrasen / ganze Saetze. Werden als exakte Wortfolge gesucht.
 phrases:
-  - "soziale Gerechtigkeit"
-  - "demografischer Wandel"
+  - "Die Brandmauer sollte fallen"
+  - "Die Afd wird vom politischen Diskurs ausgeschlossen"
 
 # Themenfelder mit Synonymen. Alle Begriffe einer Gruppe werden gesucht,
 # der Treffer wird aber dem Themen-Namen ("topic") zugeordnet.
 topics:
-  - name: "migration"
+  - name: "Remigration"
     terms:
-      - "Migration"
-      - "Zuwanderung"
-      - "Geflüchtete"
+      - "Abschiebung"
+      - "Auswandern"
+      - "Abwandern"
 
 # ---------------------------------------------------------------------------
 # 2) Optionale feste Start-URLs (werden IMMER zusaetzlich abgerufen,
 #    egal was die Such-API liefert). Leer lassen, wenn nicht gebraucht.
 # ---------------------------------------------------------------------------
 start_urls:
-  # - "https://www.beispiel-nachrichtenseite.de/artikel-123"
+  # - ""
 
 # ---------------------------------------------------------------------------
 # 3) Such-Einstellungen
 # ---------------------------------------------------------------------------
 settings:
   # Maximale Anzahl Treffer-URLs PRO Suchbegriff (Such-API).
-  max_results_per_query: 10
+  max_results_per_query: 15
 
   # Sprache/Land der Suche (Brave: z. B. "de", "en", "fr").
   search_language: "de"
