@@ -291,6 +291,38 @@ pro Keyword – ideal als schneller quantitativer Überblick.
 
 ---
 
+## 7a. Fehlerbehebung: CSV funktioniert, aber Supabase bleibt leer
+
+Das ist der häufigste Stolperstein. Der Scraper sagt es dir jetzt **deutlich**
+am Ende des Laufs. Prüfe in der Reihenfolge:
+
+1. **Steht im Actions-Log `Supabase aktiv: nein`?**
+   Dann sind die Secrets nicht gesetzt/falsch benannt. Lege in
+   *Settings → Secrets and variables → Actions* exakt `SUPABASE_URL` und
+   `SUPABASE_KEY` an (Groß-/Kleinschreibung beachten, keine Leerzeichen).
+
+2. **Steht im Log `Row Level Security (RLS) blockiert`?**
+   Dann wurde der **falsche Schlüssel** benutzt. `SUPABASE_KEY` muss der
+   **`service_role`**-Key sein (Supabase → *Project Settings → API →
+   service_role → Reveal*), **nicht** der `anon`/`public`-Key. Der
+   `service_role`-Key umgeht RLS und darf nur als GitHub-Secret liegen.
+
+3. **Steht im Log `Tabelle ... nicht gefunden`?**
+   Führe `sql/schema.sql` im Supabase **SQL Editor** (noch einmal) aus.
+
+4. **Steht im Log `Schlüssel wird abgelehnt` / `Invalid API key`?**
+   `SUPABASE_URL` oder `SUPABASE_KEY` ist falsch kopiert. Neu kopieren.
+
+Nach der Korrektur einfach den Workflow erneut starten (*Actions → Run
+workflow*). Bereits gefundene URLs werden per „Upsert" nicht doppelt angelegt.
+
+> **Sicherheitshinweis:** Lass in Supabase **Row Level Security aktiviert**
+> (`alter table public.scrape_results enable row level security;`). Mit dem
+> `service_role`-Key schreibt der Scraper trotzdem. Ist RLS *deaktiviert*, kann
+> jede:r mit dem öffentlichen `anon`-Key deine Daten lesen/ändern.
+
+---
+
 ## 8. Lokale Nutzung am eigenen PC (optional)
 
 Nur falls du den Scraper doch lokal laufen lassen willst (nicht nötig für den

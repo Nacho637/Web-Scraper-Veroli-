@@ -25,7 +25,7 @@ from .config import ConfigError, load_search_config, load_secrets
 from .extract import Document, extract_document
 from .fetcher import Fetcher
 from .search import build_search_tasks, run_search, start_url_hits
-from .storage import SupabaseStore
+from .storage import StorageError, SupabaseStore
 
 
 def _banner(text: str) -> None:
@@ -125,29 +125,48 @@ def run(config_path: str) -> int:
         print("  Nichts zu speichern. Abbruch.")
         return 0
 
-    # --- 5) Speichern in Supabase ----------------------------------------
-    _banner("Schritt 3/4: In Supabase speichern")
-    store = SupabaseStore(secrets)
-    if store.enabled:
-        saved = store.save_many(documents, cfg.run_name)
-        print(f"  {saved} Datensaetze in Supabase gespeichert/aktualisiert.")
-    else:
-        print("  Supabase nicht konfiguriert - uebersprungen (nur Datei-Export).")
-
-    # --- 6) Export CSV/JSON ----------------------------------------------
-    _banner("Schritt 4/4: CSV/JSON exportieren")
+    # --- 5) Export CSV/JSON (IMMER zuerst - so gehen die Daten nie verloren)
+    _banner("Schritt 3/4: CSV/JSON exportieren")
     csv_path, json_path = export.export_documents(documents, cfg.run_name)
     print(f"  CSV:  {csv_path}")
     print(f"  JSON: {json_path}")
 
-    # --- 7) Haeufigkeitsauswertung ---------------------------------------
     if cfg.settings.frequency_analysis:
         rows = analyze.keyword_frequencies(documents)
         freq_path = analyze.export_frequencies(rows, cfg.run_name)
         analyze.print_frequencies(rows)
         print(f"\n  Haeufigkeiten-CSV: {freq_path}")
 
-    _banner(f"Fertig! {len(documents)} Treffer gespeichert.")
+    # --- 6) Speichern in Supabase ----------------------------------------
+    _banner("Schritt 4/4: In Supabase speichern")
+    store = SupabaseStore(secrets)
+    supabase_ok = False
+    if store.enabled:
+        try:
+            saved = store.save_many(documents, cfg.run_name)
+            print(f"  {saved} Datensaetze in Supabase gespeichert/aktualisiert.")
+            supabase_ok = True
+        except StorageError as exc:
+            print("\n  " + "!" * 58)
+            print("  SPEICHERN IN SUPABASE FEHLGESCHLAGEN:")
+            for line in str(exc).splitlines():
+                print(f"  {line}")
+            print("  Deine Daten liegen aber als CSV/JSON vor (siehe oben).")
+            print("  " + "!" * 58)
+    else:
+        print("\n  " + "!" * 58)
+        print("  SUPABASE NICHT KONFIGURIERT - es wurde NICHTS in die Datenbank")
+        print("  geschrieben (nur CSV/JSON-Export).")
+        print("  Pruefe die GitHub-Secrets SUPABASE_URL und SUPABASE_KEY")
+        print("  (Settings -> Secrets and variables -> Actions).")
+        print("  " + "!" * 58)
+
+    _banner(f"Fertig! {len(documents)} Treffer verarbeitet.")
+
+    # Wenn Supabase erwartet, aber nicht geschrieben wurde -> Lauf als
+    # fehlgeschlagen markieren (roter Haken in GitHub Actions), damit es auffaellt.
+    if store.enabled and not supabase_ok:
+        return 2
     return 0
 
 
